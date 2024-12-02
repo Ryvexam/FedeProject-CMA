@@ -1,0 +1,216 @@
+{# create-contact.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}{% if app.request.get('_route') == 'app_contact_edit' %}Edit{% else %}New{% endif %} Contact{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in-up {
+            animation: fadeInUp 0.3s ease forwards;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="min-h-screen bg-green-50">
+        <!-- Header with subtle gradient -->
+        <header class="bg-gradient-to-r from-green-600 to-green-700 text-white">
+            <div class="max-w-7xl mx-auto px-4 py-4">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-medium">
+                        {% if app.request.get('_route') == 'app_contact_edit' %}Edit{% else %}New{% endif %} Contact
+                    </h1>
+                    <a href="{{ path('app_contact_index') }}"
+                       class="inline-flex items-center px-4 py-2 bg-white text-green-700 rounded-lg font-medium text-sm
+                          transform transition hover:scale-105 hover:shadow-lg">
+                        ← Back to contacts
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Form Container - Adjusted position and added contour -->
+        <div class="max-w-3xl mx-auto px-4 -mt-8">
+            <div class="bg-white rounded-xl shadow-lg overflow-hidden p-6 ring-1 ring-green-100">
+                {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+
+                <!-- Basic Information -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        {{ form_label(form.firstName, 'First Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.firstName, {'attr': {'class': 'block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
+                        {{ form_errors(form.firstName) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.lastName, 'Last Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.lastName, {'attr': {'class': 'block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
+                        {{ form_errors(form.lastName) }}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        {{ form_label(form.phone, 'Phone', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.phone, {'attr': {'class': 'block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
+                        {{ form_errors(form.phone) }}
+                    </div>
+
+                    <div>
+                        {{ form_label(form.email, 'Email', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                        {{ form_widget(form.email, {'attr': {'class': 'block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+                </div>
+
+                <!-- Photo Section -->
+                <div class="space-y-3">
+                    {{ form_label(form.photo, 'Photo', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {% if app.request.get('_route') == 'app_contact_edit' and contact.photoFilename %}
+                        <div class="flex items-center space-x-4">
+                            <img src="{{ asset('uploads/photos/' ~ contact.photoFilename) }}"
+                                 alt="Current photo"
+                                 class="h-20 w-20 object-cover rounded-full ring-2 ring-green-100">
+                            <span class="text-sm text-gray-500">Current photo</span>
+                        </div>
+                    {% endif %}
+                    {{ form_widget(form.photo, {'attr': {'class': 'block w-full text-sm text-gray-500
+                        file:mr-4 file:py-2 file:px-4
+                        file:rounded-lg file:border-0
+                        file:text-sm file:font-medium
+                        file:bg-green-50 file:text-green-700
+                        hover:file:bg-green-100
+                        transition-colors duration-200'}}) }}
+                    {{ form_errors(form.photo) }}
+                </div>
+
+                <!-- Groups -->
+                <div class="space-y-2">
+                    {{ form_label(form.groups, 'Groups', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
+                    {{ form_widget(form.groups, {'attr': {'class': 'block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
+                    {{ form_errors(form.groups) }}
+                </div>
+
+                <!-- Custom Fields Section -->
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-lg font-medium text-gray-900">Custom Fields</h3>
+                        <button type="button"
+                                onclick="addCustomField()"
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg
+                                       text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2
+                                       focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                            <svg class="h-4 w-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Add Field
+                        </button>
+                    </div>
+                    <div id="custom-fields" class="space-y-3">
+                        {% if app.request.get('_route') == 'app_contact_edit' %}
+                            {% for field, value in contact.customFields %}
+                                <div class="flex space-x-4 items-start fade-in-up">
+                                    <div class="flex-1">
+                                        <input type="text"
+                                               name="custom_fields[{{ loop.index0 }}][name]"
+                                               value="{{ field }}"
+                                               placeholder="Field Name"
+                                               class="block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500
+                                                      focus:border-transparent transition-all duration-300"
+                                               required>
+                                    </div>
+                                    <div class="flex-1">
+                                        <input type="text"
+                                               name="custom_fields[{{ loop.index0 }}][value]"
+                                               value="{{ value }}"
+                                               placeholder="Field Value"
+                                               class="block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500
+                                                      focus:border-transparent transition-all duration-300"
+                                               required>
+                                    </div>
+                                    <button type="button"
+                                            onclick="this.parentElement.remove()"
+                                            class="inline-flex items-center px-2 py-2 text-red-600 hover:bg-red-50 rounded-lg
+                                                   transition-colors duration-200">
+                                        <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="pt-6 border-t border-green-100">
+                    <div class="flex justify-end space-x-3">
+                        <a href="{{ path('app_contact_index') }}"
+                           class="inline-flex items-center px-4 py-2 border border-green-300 shadow-sm text-sm font-medium
+                                  rounded-lg text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2
+                                  focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                            Cancel
+                        </a>
+                        <button type="submit"
+                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium
+                                       rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2
+                                       focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
+                            {% if app.request.get('_route') == 'app_contact_edit' %}Update{% else %}Save{% endif %} Contact
+                        </button>
+                    </div>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let customFieldCount = {{ app.request.get('_route') == 'app_contact_edit' ? contact.customFields|length : 0 }};
+
+        function addCustomField() {
+            const container = document.getElementById('custom-fields');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'flex space-x-4 items-start fade-in-up';
+            fieldDiv.innerHTML = `
+                <div class="flex-1">
+                    <input type="text"
+                           name="custom_fields[${customFieldCount}][name]"
+                           placeholder="Field Name"
+                           class="block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500
+                                  focus:border-transparent transition-all duration-300"
+                           required>
+                </div>
+                <div class="flex-1">
+                    <input type="text"
+                           name="custom_fields[${customFieldCount}][value]"
+                           placeholder="Field Value"
+                           class="block w-full rounded-lg border-green-200 focus:ring-2 focus:ring-green-500
+                                  focus:border-transparent transition-all duration-300"
+                           required>
+                </div>
+                <button type="button"
+                        onclick="this.parentElement.remove()"
+                        class="inline-flex items-center px-2 py-2 text-red-600 hover:bg-red-50 rounded-lg
+                               transition-colors duration-200">
+                    <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            `;
+            container.appendChild(fieldDiv);
+            customFieldCount++;
+        }
+    </script>
+{% endblock %}
