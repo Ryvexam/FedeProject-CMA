@@ -1,203 +1,74 @@
+{# templates/contact/new.html.twig #}
 {% extends 'base.html.twig' %}
+
+{# Import components #}
+{% import 'components/form_field.html.twig' as form_fields %}
+{% import 'components/header.html.twig' as headers %}
+{% import 'components/photo_upload.html.twig' as photo_uploads %}
+{% import 'components/group_selector.html.twig' as group_selectors %}
+{% import 'components/custom_fields.html.twig' as custom_fields %}
+{% import 'components/form_actions.html.twig' as actions %}
+{% import 'components/scripts/photo_upload.html.twig' as photo_scripts %}
+{% import 'components/scripts/group_selector.html.twig' as group_scripts %}
+{% import 'components/scripts/custom_fields.html.twig' as custom_field_scripts %}
+{% import 'components/styles/animations.html.twig' as animation_styles %}
+{% import 'components/styles/components.html.twig' as component_styles %}
+
+{% block stylesheets %}
+
+    {{ animation_styles.animations() }}
+    {{ component_styles.component_styles() }}
+{% endblock %}
+
+{% block javascripts %}
+    {{ photo_scripts.photo_upload_script() }}
+    {{ group_scripts.group_selector_script() }}
+    {{ custom_field_scripts.custom_fields_script() }}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initPhotoUpload();
+            initGroupSelector();
+        });
+    </script>
+{% endblock %}
 
 {% block title %}New Contact{% endblock %}
 
 {% block body %}
     <div class="min-h-screen bg-green-50">
-        <!-- Header with subtle gradient -->
-        <header class="bg-gradient-to-r from-green-600 to-green-700 text-white">
-            <div class="max-w-7xl mx-auto px-4 py-6">
-                <div class="flex items-center justify-between">
-                    <h1 class="text-2xl font-medium">New Contact</h1>
-                    <a href="{{ path('app_contact_index') }}"
-                       class="inline-flex items-center px-4 py-2 bg-white text-green-700 rounded-lg font-medium text-sm
-                          transform transition hover:scale-105 hover:shadow-lg">
-                        ← Back to contacts
-                    </a>
-                </div>
-            </div>
-        </header>
+        {# Page Header #}
+        {{ headers.page_header('New Contact', 'app_contact_index', 'Back to contacts') }}
 
-        <!-- Form Container -->
+        {# Form Container #}
         <div class="max-w-3xl mx-auto px-4 py-8">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden p-6">
                 {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
 
-                <!-- Basic Information -->
+                {# Basic Information #}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        {{ form_label(form.firstName, 'First Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.firstName, {'attr': {'class': 'block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
-                        {{ form_errors(form.firstName) }}
-                    </div>
-
-                    <div>
-                        {{ form_label(form.lastName, 'Last Name', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.lastName, {'attr': {'class': 'block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
-                        {{ form_errors(form.lastName) }}
-                    </div>
+                    {{ form_fields.input(form.firstName, 'First Name') }}
+                    {{ form_fields.input(form.lastName, 'Last Name') }}
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        {{ form_label(form.phone, 'Phone', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.phone, {'attr': {'class': 'block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
-                        {{ form_errors(form.phone) }}
-                    </div>
-
-                    <div>
-                        {{ form_label(form.email, 'Email', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                        {{ form_widget(form.email, {'attr': {'class': 'block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
-                        {{ form_errors(form.email) }}
-                    </div>
+                    {{ form_fields.input(form.phone, 'Phone', 'tel') }}
+                    {{ form_fields.input(form.email, 'Email', 'email') }}
                 </div>
 
-                <!-- Photo Upload -->
-                <div class="space-y-2">
-                    {{ form_label(form.photo, 'Photo', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    <div class="relative">
-                        <label class="block">
-                            <span class="sr-only">Choose photo</span>
-                            {{ form_widget(form.photo, {
-                                'attr': {
-                                    'class': 'hidden',
-                                    'data-photo-input': 'true'
-                                }
-                            }) }}
-                            <div class="relative">
-                                <div class="inline-flex items-center px-4 py-3 border-2 border-green-200 rounded-lg text-gray-700 bg-white hover:bg-green-50 cursor-pointer transition-all duration-300">
-                                    <svg class="w-5 h-5 mr-2 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"/>
-                                    </svg>
-                                    <span class="text-sm" data-photo-label>Choose a photo...</span>
-                                </div>
-                                <div class="mt-2 text-sm text-gray-500" id="photo-name"></div>
-                            </div>
-                        </label>
-                    </div>
-                    {{ form_errors(form.photo) }}
-                </div>
+                {# Photo Upload #}
+                {{ photo_uploads.photo_upload(form.photo) }}
 
-                <!-- Groups -->
-                <div class="space-y-2">
-                    {{ form_label(form.groups, 'Groups', {'label_attr': {'class': 'block text-sm font-medium text-gray-700 mb-1'}}) }}
-                    {{ form_widget(form.groups, {'attr': {'class': 'block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all duration-300'}}) }}
-                    {{ form_errors(form.groups) }}
-                </div>
+                {# Groups #}
+                {{ group_selectors.group_selector(form.groups) }}
 
-                <!-- Custom Fields Section -->
-                <div class="space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-lg font-medium text-gray-900">Custom Fields</h3>
-                        <button type="button"
-                                onclick="addCustomField()"
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg
-                                       text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2
-                                       focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
-                            + Add Field
-                        </button>
-                    </div>
-                    <div id="custom-fields" class="space-y-4">
-                        <!-- Custom fields will be added here dynamically -->
-                    </div>
-                </div>
+                {# Custom Fields Section #}
+                {{ custom_fields.custom_fields_section() }}
 
-                <!-- Form Actions -->
-                <div class="pt-6 border-t border-green-100">
-                    <div class="flex justify-end space-x-3">
-                        <a href="{{ path('app_contact_index') }}"
-                           class="inline-flex items-center px-4 py-2 border border-green-300 shadow-sm text-sm font-medium
-                                  rounded-lg text-green-700 bg-white hover:bg-green-50 focus:outline-none focus:ring-2
-                                  focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
-                            Cancel
-                        </a>
-                        <button type="submit"
-                                class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium
-                                       rounded-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2
-                                       focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
-                            Save Contact
-                        </button>
-                    </div>
-                </div>
+                {# Form Actions #}
+                {{ actions.form_actions('app_contact_index') }}
+
                 {{ form_end(form) }}
             </div>
         </div>
     </div>
-
-    <script>
-        let customFieldCount = 0;
-
-        // Handle file input styling
-        document.addEventListener('DOMContentLoaded', function() {
-            const fileInput = document.querySelector('[data-photo-input]');
-            const fileLabel = document.querySelector('[data-photo-label]');
-            const fileName = document.getElementById('photo-name');
-
-            if (fileInput) {
-                fileInput.addEventListener('change', function(e) {
-                    if (e.target.files.length > 0) {
-                        const file = e.target.files[0];
-                        fileLabel.textContent = 'Photo selected';
-                        fileName.textContent = file.name;
-                    } else {
-                        fileLabel.textContent = 'Choose a photo...';
-                        fileName.textContent = '';
-                    }
-                });
-            }
-        });
-
-        function addCustomField() {
-            const container = document.getElementById('custom-fields');
-            const fieldDiv = document.createElement('div');
-            fieldDiv.className = 'flex space-x-4 items-start fade-in-up';
-            fieldDiv.innerHTML = `
-                <div class="flex-1">
-                    <input type="text"
-                           name="custom_fields[${customFieldCount}][name]"
-                           placeholder="Field Name"
-                           class="block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500
-                                  focus:border-transparent transition-all duration-300"
-                           required>
-                </div>
-                <div class="flex-1">
-                    <input type="text"
-                           name="custom_fields[${customFieldCount}][value]"
-                           placeholder="Field Value"
-                           class="block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500
-                                  focus:border-transparent transition-all duration-300"
-                           required>
-                </div>
-                <button type="button"
-                        onclick="this.parentElement.remove()"
-                        class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium
-                               rounded-lg text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2
-                               focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
-                    Remove
-                </button>
-            `;
-            container.appendChild(fieldDiv);
-            customFieldCount++;
-        }
-    </script>
-{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    <style>
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .fade-in-up {
-            animation: fadeInUp 0.3s ease forwards;
-        }
-    </style>
 {% endblock %}

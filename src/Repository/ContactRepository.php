@@ -23,8 +23,8 @@ class ContactRepository extends ServiceEntityRepository
             ->orWhere('LOWER(c.email) LIKE LOWER(:query)')
             ->orWhere('LOWER(g.name) LIKE LOWER(:query)')
             ->setParameter('query', '%' . $query . '%')
-            ->orderBy('c.firstName', 'ASC')
-            ->addOrderBy('c.lastName', 'ASC');
+            ->orderBy('LOWER(c.firstName)', 'ASC')
+            ->addOrderBy('LOWER(c.lastName)', 'ASC');
 
         $results = $qb->getQuery()->getResult();
 
@@ -38,5 +38,14 @@ class ContactRepository extends ServiceEntityRepository
             }
             return false;
         });
+    }
+
+    public function findAllSorted(): array
+    {
+        return $this->createQueryBuilder('c')
+            ->orderBy('LOWER(c.firstName)', 'ASC')
+            ->addOrderBy('LOWER(c.lastName)', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 }

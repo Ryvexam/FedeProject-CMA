@@ -18,7 +18,7 @@ class GroupController extends AbstractController
     public function index(GroupRepository $groupRepository): Response
     {
         return $this->render('group/index.html.twig', [
-            'groups' => $groupRepository->findAll(),
+            'groups' => $groupRepository->findAllSorted(),
         ]);
     }
 

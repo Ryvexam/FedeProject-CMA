@@ -1,0 +1,87 @@
+{# components/scripts/group_selector.html.twig #}
+{% macro group_selector_script() %}
+    <script>
+        // Define the function in the global scope
+        function initGroupSelector() {
+            const select = document.getElementById('groups-select');
+            if (!select) return; // Guard clause if select doesn't exist
+
+            const groupPills = document.querySelectorAll('.group-pill');
+            if (!groupPills.length) return; // Guard clause if no pills exist
+
+            // Initialize selected states from the hidden select
+            function initializeSelectedStates() {
+                const selectedValues = [];
+                Array.from(select.options).forEach(option => {
+                    if (option.selected) {
+                        selectedValues.push(option.value);
+                    }
+                });
+
+                groupPills.forEach(pill => {
+                    const groupId = pill.dataset.groupId;
+                    if (selectedValues.includes(groupId)) {
+                        togglePillSelection(pill, true);
+                    }
+                });
+            }
+
+            // Toggle the visual state of a pill
+            function togglePillSelection(pill, selected) {
+                const checkIcon = pill.querySelector('.check-icon');
+                if (selected) {
+                    pill.classList.add('border-green-500', 'bg-green-50');
+                    checkIcon?.classList.remove('hidden');
+                } else {
+                    pill.classList.remove('border-green-500', 'bg-green-50');
+                    checkIcon?.classList.add('hidden');
+                }
+            }
+
+            // Update the hidden select element
+            function updateSelectValue() {
+                const selectedPills = document.querySelectorAll('.group-pill.border-green-500');
+                const selectedValues = Array.from(selectedPills).map(pill => pill.dataset.groupId);
+
+                // Deselect all options first
+                Array.from(select.options).forEach(option => option.selected = false);
+
+                // Select the appropriate options
+                selectedValues.forEach(value => {
+                    const option = select.querySelector(`option[value="${value}"]`);
+                    if (option) option.selected = true;
+                });
+
+                // Trigger change event
+                select.dispatchEvent(new Event('change'));
+            }
+
+            // Add click handlers to pills
+            groupPills.forEach(pill => {
+                pill.addEventListener('click', function() {
+                    const isSelected = pill.classList.contains('border-green-500');
+                    const isMultiple = select.multiple || false;
+
+                    if (isMultiple) {
+                        // For multiple select, toggle the selection
+                        togglePillSelection(pill, !isSelected);
+                    } else {
+                        // For single select, deselect all others and select this one
+                        groupPills.forEach(p => togglePillSelection(p, false));
+                        togglePillSelection(pill, true);
+                    }
+
+                    updateSelectValue();
+                });
+            });
+
+            // Initialize the pills based on the select's initial value
+            initializeSelectedStates();
+        }
+
+        // Call the initialization when the DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            initGroupSelector();
+        });
+    </script>
+{% endmacro %}

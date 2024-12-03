@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Filesystem\Filesystem;
 
 #[Route('/contacts')]
 class ContactController extends AbstractController
@@ -20,7 +21,7 @@ class ContactController extends AbstractController
         $search = $request->query->get('search');
         $contacts = $search
             ? $contactRepository->search($search)
-            : $contactRepository->findAll();
+            : $contactRepository->findAllSorted();
 
         return $this->render('contact/index.html.twig', [
             'contacts' => $contacts,
@@ -36,6 +37,18 @@ class ContactController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Validate name fields
+            $firstName = $contact->getFirstName();
+            $lastName = $contact->getLastName();
+
+            if (!$this->isValidName($firstName) || !$this->isValidName($lastName)) {
+                $this->addFlash('error', 'Names can only contain letters and accented characters.');
+                return $this->render('contact/new.html.twig', [
+                    'contact' => $contact,
+                    'form' => $form,
+                ]);
+            }
+
             // Handle custom fields
             $customFields = $request->request->all('custom_fields');
             if (is_array($customFields)) {
@@ -75,6 +88,12 @@ class ContactController extends AbstractController
         ]);
     }
 
+    private function isValidName(string $name): bool
+    {
+        // This regex allows letters (including accented) and spaces
+        return preg_match('/^[\p{L}\s]+$/u', $name) === 1;
+    }
+
     #[Route('/{id}', name: 'app_contact_show', methods: ['GET'])]
     public function show(Contact $contact): Response
     {
@@ -105,6 +124,9 @@ class ContactController extends AbstractController
             // Handle photo upload
             $photoFile = $form->get('photo')->getData();
             if ($photoFile) {
+                // Delete old photo if it exists
+                $this->deleteContactPhoto($contact);
+
                 $newFilename = uniqid().'.'.$photoFile->guessExtension();
                 try {
                     $photoFile->move(
@@ -128,12 +150,61 @@ class ContactController extends AbstractController
         ]);
     }
 
+    private function deleteContactPhoto(Contact $contact): void
+    {
+        $filesystem = new Filesystem();
+        $photoFilename = $contact->getPhotoFilename();
+
+        if ($photoFilename) {
+            $photoPath = $this->getParameter('photos_directory') . '/' . $photoFilename;
+            if ($filesystem->exists($photoPath)) {
+                try {
+                    $filesystem->remove($photoPath);
+                } catch (\Exception $e) {
+                    // Log error if needed
+                }
+            }
+        }
+    }
+
     #[Route('/{id}', name: 'app_contact_delete', methods: ['POST'])]
     public function delete(Request $request, Contact $contact, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$contact->getId(), $request->request->get('_token'))) {
+            // Delete the photo file first
+            $this->deleteContactPhoto($contact);
+
             $entityManager->remove($contact);
             $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_contact_index');
+    }
+
+    #[Route('/contacts/bulk-delete', name: 'app_contact_bulk_delete', methods: ['POST'])]
+    public function bulkDelete(
+        Request $request,
+        ContactRepository $contactRepository,
+        EntityManagerInterface $entityManager
+    ): Response
+    {
+        $submittedToken = $request->request->get('_token');
+        if (!$this->isCsrfTokenValid('bulk_delete', $submittedToken)) {
+            throw $this->createAccessDeniedException('Invalid CSRF token.');
+        }
+
+        $contactIds = json_decode($request->request->get('contact_ids', '[]'));
+
+        if (!empty($contactIds)) {
+            $contacts = $contactRepository->findBy(['id' => $contactIds]);
+            foreach ($contacts as $contact) {
+                // Delete the photo file first
+                $this->deleteContactPhoto($contact);
+                $entityManager->remove($contact);
+            }
+            $entityManager->flush();
+
+            $this->addFlash('success', count($contacts) . ' contacts deleted successfully.');
         }
 
         return $this->redirectToRoute('app_contact_index');

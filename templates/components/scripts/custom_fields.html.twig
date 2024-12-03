@@ -1,0 +1,39 @@
+{# components/scripts/custom_fields.html.twig #}
+{% macro custom_fields_script() %}
+    <script>
+        let customFieldCount = 0;
+
+        const addCustomField = () => {
+            const container = document.getElementById('custom-fields');
+            const fieldDiv = document.createElement('div');
+            fieldDiv.className = 'flex space-x-4 items-start fade-in-up';
+            fieldDiv.innerHTML = `
+            <div class="flex-1">
+                <input type="text"
+                       name="custom_fields[${customFieldCount}][name]"
+                       placeholder="Field Name"
+                       class="block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500
+                              focus:border-transparent transition-all duration-300"
+                       required>
+            </div>
+            <div class="flex-1">
+                <input type="text"
+                       name="custom_fields[${customFieldCount}][value]"
+                       placeholder="Field Value"
+                       class="block w-full rounded-lg border-2 border-green-200 py-3 focus:ring-2 focus:ring-green-500
+                              focus:border-transparent transition-all duration-300"
+                       required>
+            </div>
+            <button type="button"
+                    onclick="this.parentElement.remove()"
+                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium
+                           rounded-lg text-red-600 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2
+                           focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200">
+                Remove
+            </button>
+        `;
+            container.appendChild(fieldDiv);
+            customFieldCount++;
+        };
+    </script>
+{% endmacro %}
