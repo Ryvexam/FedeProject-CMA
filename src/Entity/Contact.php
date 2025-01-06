@@ -43,7 +43,7 @@ class Contact
     #[ORM\Column(type: 'json', nullable: true)]
     private array $customFields = [];
 
-    #[ORM\ManyToMany(targetEntity: Group::class, inversedBy: 'contacts')]
+    #[ORM\ManyToMany(targetEntity: Group::class, mappedBy: 'contacts')]
     private Collection $groups;
 
     #[ORM\Column]
@@ -173,7 +173,7 @@ class Contact
     {
         if (!$this->groups->contains($group)) {
             $this->groups->add($group);
-            $group->addContact($this); // Ensure bidirectional relationship
+            $group->addContact($this);
         }
         return $this;
     }

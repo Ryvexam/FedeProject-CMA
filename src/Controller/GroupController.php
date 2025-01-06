@@ -95,7 +95,9 @@ class GroupController extends AbstractController
 
             foreach ($selectedContacts as $contact) {
                 if (!$group->getContacts()->contains($contact)) {
-                    $group->addContact($contact); // Add contact to group
+                    $group->addContact($contact);
+                    $contact->addGroup($group);
+                    $this->addFlash('debug', sprintf('Added contact %s to group %s', $contact->getId(), $group->getId()));
                 }
             }
 
