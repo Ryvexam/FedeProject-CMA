@@ -36,7 +36,6 @@ class ContactController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Validate name fields
             $firstName = $contact->getFirstName();
             $lastName = $contact->getLastName();
 
@@ -89,16 +88,7 @@ class ContactController extends AbstractController
 
     private function isValidName(string $name): bool
     {
-        // This regex allows letters (including accented) and spaces
         return preg_match('/^[\p{L}\s]+$/u', $name) === 1;
-    }
-
-    #[Route('/contacts/{id}', name: 'app_contact_show', methods: ['GET'])]
-    public function show(Contact $contact): Response
-    {
-        return $this->render('contact/show.html.twig', [
-            'contact' => $contact,
-        ]);
     }
 
     #[Route('/contacts/{id}/edit', name: 'app_contact_edit', methods: ['GET', 'POST'])]

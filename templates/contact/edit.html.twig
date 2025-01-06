@@ -57,7 +57,7 @@
 
                     {# Groups Section #}
                     {% import 'components/groups.html.twig' as group_selectors %}
-                    {{ group_selectors.group_selector(form.groups) }}
+                    {{ group_selectors.group_selector(form.groups, contact.groups) }}
                 </div>
 
                 {# Custom Fields Section #}
