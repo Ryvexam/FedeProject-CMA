@@ -32,6 +32,30 @@
     </style>
 {% endblock %}
 
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Dynamic Search Filtering for Groups (by name only)
+            $('#search').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase(); // Get the search term
+
+                $('.group-row').each(function() {
+                    const groupName = $(this).find('td:nth-child(1)').text().toLowerCase(); // Group Name
+
+                    // Check if the search term matches the group name
+                    if (groupName.includes(searchTerm)) {
+                        $(this).show(); // Show the row if it matches
+                    } else {
+                        $(this).hide(); // Hide the row if it doesn't match
+                    }
+                });
+            });
+        });
+    </script>
+{% endblock %}
+
 {% block body %}
     <div class="min-h-screen bg-green-50">
         <!-- Header with subtle gradient -->
@@ -59,6 +83,7 @@
                 <div class="relative flex-1">
                     <input type="text"
                            name="search"
+                           id="search"
                            value="{{ search|default('') }}"
                            class="block w-full border border-green-200 rounded-lg py-3 px-4 text-sm
                                   focus:ring-2 focus:ring-green-500 focus:border-transparent

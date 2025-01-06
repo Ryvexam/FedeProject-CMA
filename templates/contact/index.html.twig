@@ -34,6 +34,7 @@
 
 {% block javascripts %}
     {{ parent() }}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const selectAll = document.getElementById('select-all');
@@ -86,6 +87,25 @@
             });
 
             updateDeleteButton();
+
+            // Dynamic Search Filtering
+            $('#search').on('input', function() {
+                const searchTerm = $(this).val().toLowerCase(); // Get the search term
+
+                $('.contact-row').each(function() {
+                    const contactName = $(this).find('td:nth-child(2)').text().toLowerCase(); // Get the contact name
+                    const contactPhone = $(this).find('td:nth-child(3)').text().toLowerCase(); // Get the contact phone
+                    const contactEmail = $(this).find('td:nth-child(4)').text().toLowerCase(); // Get the contact email
+                    const contactGroups = $(this).find('td:nth-child(5)').text().toLowerCase(); // Get the contact groups
+
+                    // Check if the search term matches any of the contact details
+                    if (contactName.includes(searchTerm) || contactPhone.includes(searchTerm) || contactEmail.includes(searchTerm) || contactGroups.includes(searchTerm)) {
+                        $(this).show(); // Show the row if it matches
+                    } else {
+                        $(this).hide(); // Hide the row if it doesn't match
+                    }
+                });
+            });
         });
     </script>
 {% endblock %}
@@ -131,6 +151,7 @@
                 <div class="relative flex-1">
                     <input type="text"
                            name="search"
+                           id="search"
                            value="{{ search }}"
                            class="block w-full border border-green-200 rounded-lg py-3 px-4 text-sm
                               focus:ring-2 focus:ring-green-500 focus:border-transparent
