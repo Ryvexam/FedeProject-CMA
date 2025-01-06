@@ -20,14 +20,17 @@ class Contact
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $firstName = null;
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $lastName = null;
 
     #[ORM\Column(length: 50)]
     #[Assert\NotBlank]
+    #[Assert\Length(min: 8, max: 20)]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -170,13 +173,16 @@ class Contact
     {
         if (!$this->groups->contains($group)) {
             $this->groups->add($group);
+            $group->addContact($this); // Ensure bidirectional relationship
         }
         return $this;
     }
 
     public function removeGroup(Group $group): static
     {
-        $this->groups->removeElement($group);
+        if ($this->groups->removeElement($group)) {
+            $group->removeContact($this); // Ensure bidirectional relationship
+        }
         return $this;
     }
 

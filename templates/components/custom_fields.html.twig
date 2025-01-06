@@ -1,18 +1,18 @@
-{# components/custom_fields.html.twig #}
 {% macro custom_fields_section() %}
-    <div class="space-y-4">
-        <div class="flex items-center justify-between">
-            <h3 class="text-lg font-medium text-gray-900">Custom Fields</h3>
+    <div class="p-6">
+        <div class="flex items-center justify-between mb-4">
+            <h3 class="text-lg font-medium text-gray-900">Additional Information</h3>
             <button type="button"
                     onclick="addCustomField()"
-                    class="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-lg
-                           text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2
-                           focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
-                + Add Field
+                    class="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium
+                           text-green-600 bg-green-50 hover:bg-green-100 transition-colors duration-200">
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Add Field
             </button>
         </div>
-        <div id="custom-fields" class="space-y-4">
-            <!-- Custom fields will be added here dynamically -->
+        <div id="custom-fields" class="space-y-3">
         </div>
     </div>
 {% endmacro %}

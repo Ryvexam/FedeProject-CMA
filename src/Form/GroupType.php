@@ -18,7 +18,7 @@ class GroupType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'Group Name',
                 'attr' => [
-                    'class' => 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm',
+                    'class' => 'mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm',
                     'placeholder' => 'Enter group name'
                 ]
             ])

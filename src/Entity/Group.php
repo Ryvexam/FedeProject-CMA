@@ -18,8 +18,9 @@ class Group
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     #[Assert\NotBlank]
+    #[Assert\Length(min: 2, max: 255)]
     private ?string $name = null;
 
     #[ORM\ManyToMany(targetEntity: Contact::class, mappedBy: 'groups')]
@@ -72,7 +73,7 @@ class Group
     {
         if (!$this->contacts->contains($contact)) {
             $this->contacts->add($contact);
-            $contact->addGroup($this);
+            $contact->addGroup($this); // Ensure bidirectional relationship
         }
         return $this;
     }
@@ -80,7 +81,7 @@ class Group
     public function removeContact(Contact $contact): static
     {
         if ($this->contacts->removeElement($contact)) {
-            $contact->removeGroup($this);
+            $contact->removeGroup($this); // Ensure bidirectional relationship
         }
         return $this;
     }

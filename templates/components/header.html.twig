@@ -1,13 +1,15 @@
-{# components/header.html.twig #}
-{% macro page_header(title, back_path, back_text) %}
+{% macro page_header(title, back_path, back_label) %}
     <header class="bg-gradient-to-r from-green-600 to-green-700 text-white">
-        <div class="max-w-7xl mx-auto px-4 py-6">
+        <div class="max-w-7xl mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
                 <h1 class="text-2xl font-medium">{{ title }}</h1>
-                <a href="{{ path(back_path) }}"
+                <a href="{{ back_path }}"
                    class="inline-flex items-center px-4 py-2 bg-white text-green-700 rounded-lg font-medium text-sm
                           transform transition hover:scale-105 hover:shadow-lg">
-                    ← {{ back_text }}
+                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                    {{ back_label }}
                 </a>
             </div>
         </div>

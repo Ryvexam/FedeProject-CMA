@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Group;
+use App\Entity\Contact;
+use App\Form\GroupAddContactsType;
 use App\Form\GroupType;
 use App\Repository\GroupRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -39,7 +41,7 @@ class GroupController extends AbstractController
 
         return $this->render('group/new.html.twig', [
             'group' => $group,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -66,7 +68,7 @@ class GroupController extends AbstractController
 
         return $this->render('group/edit.html.twig', [
             'group' => $group,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -89,6 +91,14 @@ class GroupController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $selectedContacts = $form->get('contacts')->getData();
+
+            foreach ($selectedContacts as $contact) {
+                if (!$group->getContacts()->contains($contact)) {
+                    $group->addContact($contact); // Add contact to group
+                }
+            }
+
             $entityManager->flush();
             $this->addFlash('success', 'Contacts added to group successfully.');
             return $this->redirectToRoute('app_group_show', ['id' => $group->getId()]);
@@ -96,11 +106,11 @@ class GroupController extends AbstractController
 
         return $this->render('group/add_contacts.html.twig', [
             'group' => $group,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/{groupId}/remove-contact/{contactId}', name: 'app_group_remove_contact', methods: ['POST'])]
+    #[Route('/group/{groupId}/remove-contact/{contactId}', name: 'app_group_remove_contact', methods: ['POST'])]
     public function removeContact(
         Request $request,
         int $groupId,
@@ -114,13 +124,13 @@ class GroupController extends AbstractController
             throw $this->createNotFoundException('Group not found');
         }
 
-        $contact = $entityManager->getReference(Contact::class, $contactId);
+        $contact = $entityManager->getRepository(Contact::class)->find($contactId);
         if (!$contact) {
             throw $this->createNotFoundException('Contact not found');
         }
 
         if ($this->isCsrfTokenValid('remove-contact-'.$contactId, $request->request->get('_token'))) {
-            $group->removeContact($contact);
+            $group->removeContact($contact); // Remove contact from group
             $entityManager->flush();
             $this->addFlash('success', 'Contact removed from group successfully.');
         }

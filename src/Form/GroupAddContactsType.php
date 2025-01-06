@@ -4,8 +4,9 @@ namespace App\Form;
 
 use App\Entity\Group;
 use App\Entity\Contact;
-use Symfony\Component\Form\AbstractType;
+use App\Repository\ContactRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -22,9 +23,11 @@ class GroupAddContactsType extends AbstractType
                 'multiple' => true,
                 'expanded' => true,
                 'label' => 'Select Contacts to Add',
-                'attr' => ['class' => 'mt-1 block w-full'],
-            ])
-        ;
+                'query_builder' => function (ContactRepository $contactRepository) {
+                    return $contactRepository->createQueryBuilder('c')
+                        ->orderBy('c.firstName', 'ASC');
+                },
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
