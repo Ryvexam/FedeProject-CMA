@@ -74,7 +74,8 @@
             deleteSelectedBtn?.addEventListener('click', function(e) {
                 e.preventDefault();
                 const selectedIds = Array.from(document.querySelectorAll('.contact-checkbox:checked'))
-                    .map(checkbox => checkbox.value);
+                    .map(checkbox => parseInt(checkbox.value)) // Convert to integers for sorting
+                    .sort((a, b) => a - b); // Sort in ascending order
 
                 if (selectedIds.length >= 2 && confirm('Are you sure you want to delete the selected contacts?')) {
                     const input = document.createElement('input');
@@ -133,13 +134,19 @@
                     </form>
                     <a href="{{ path('app_group_index') }}"
                        class="inline-flex items-center px-4 py-2 bg-green-800 text-white rounded-lg
-                              font-medium text-sm transform transition hover:bg-green-900">
+                      font-medium text-sm transform transition hover:bg-green-900">
                         Groups
                     </a>
                     <a href="{{ path('app_contact_new') }}"
                        class="inline-flex items-center px-4 py-2 bg-white text-green-700 rounded-lg
-                              font-medium text-sm transform transition hover:scale-105 hover:shadow-lg">
+                      font-medium text-sm transform transition hover:scale-105 hover:shadow-lg">
                         + Add contact
+                    </a>
+                    <!-- Add the "Import from Google Contacts" button -->
+                    <a href="{{ path('import_google') }}"
+                       class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg
+                      font-medium text-sm transform transition hover:bg-blue-600">
+                        Import from Google Contacts
                     </a>
                 </div>
             </div>

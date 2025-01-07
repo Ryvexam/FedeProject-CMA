@@ -6,6 +6,7 @@ use App\Entity\Contact;
 use App\Form\ContactType;
 use App\Repository\ContactRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,6 +15,10 @@ use Symfony\Component\Filesystem\Filesystem;
 
 class ContactController extends AbstractController
 {
+    public function __construct(private readonly LoggerInterface $logger)
+    {
+    }
+
     #[Route('/', name: 'app_contact_index', methods: ['GET'])]
     public function index(ContactRepository $contactRepository, Request $request): Response
     {
@@ -170,32 +175,57 @@ class ContactController extends AbstractController
         return $this->redirectToRoute('app_contact_index');
     }
 
-    #[Route('/contacts/bulk-delete', name: 'app_contact_bulk_delete', methods: ['POST'])]
+    #[Route('/bulk-delete', name: 'app_contact_bulk_delete', methods: ['POST'])]
     public function bulkDelete(
         Request $request,
         ContactRepository $contactRepository,
         EntityManagerInterface $entityManager
     ): Response
     {
-        $submittedToken = $request->request->get('_token');
-        if (!$this->isCsrfTokenValid('bulk_delete', $submittedToken)) {
+        // Validate CSRF token
+        if (!$this->isCsrfTokenValid('bulk_delete', $request->request->get('_token'))) {
             throw $this->createAccessDeniedException('Invalid CSRF token.');
         }
 
-        $contactIds = json_decode($request->request->get('contact_ids', '[]'));
+        // Retrieve and decode contact IDs from the request
+        $contactIds = json_decode($request->request->get('contact_ids'), true) ?? [];
 
-        if (!empty($contactIds)) {
-            $contacts = $contactRepository->findBy(['id' => $contactIds]);
-            foreach ($contacts as $contact) {
-                // Delete the photo file first
+        // Validate contact IDs
+        if (empty($contactIds)) {
+            $this->addFlash('error', 'No contacts selected for deletion.');
+            return $this->redirectToRoute('app_contact_index');
+        }
+
+        // Fetch contacts to be deleted
+        $contacts = $contactRepository->findBy(['id' => $contactIds]);
+
+        // Delete each contact
+        $successCount = 0;
+        foreach ($contacts as $contact) {
+            try {
+                // Delete the photo file (if applicable)
                 $this->deleteContactPhoto($contact);
-                $entityManager->remove($contact);
-            }
-            $entityManager->flush();
 
-            $this->addFlash('success', count($contacts) . ' contacts deleted successfully.');
+                // Remove the contact from the database
+                $entityManager->remove($contact);
+                $successCount++;
+            } catch (\Exception $e) {
+                // Log the error and continue
+                error_log('Error deleting contact ID ' . $contact->getId() . ': ' . $e->getMessage());
+            }
+        }
+
+        // Flush changes to the database
+        $entityManager->flush();
+
+        // Add feedback message
+        if ($successCount > 0) {
+            $this->addFlash('success', $successCount . ' contacts deleted successfully.');
+        } else {
+            $this->addFlash('error', 'No contacts were deleted.');
         }
 
         return $this->redirectToRoute('app_contact_index');
     }
+
 }
