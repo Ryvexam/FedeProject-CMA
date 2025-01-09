@@ -1,0 +1,9 @@
+twig:
+    file_name_pattern: '*.twig'
+    globals:
+        google_client_id: '%env(GOOGLE_CLIENT_ID)%'
+
+
+when@test:
+    twig:
+        strict_variables: true

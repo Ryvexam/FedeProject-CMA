@@ -1,4 +1,3 @@
-{# templates/contact/new.html.twig #}
 {% extends 'base.html.twig' %}
 
 {% block title %}New Contact{% endblock %}
@@ -25,20 +24,16 @@
 
 {% block body %}
     <div class="min-h-screen bg-green-50">
-        {# Header #}
         {% import 'components/header.html.twig' as headers %}
         {{ headers.page_header('New Contact', path('app_contact_index'), 'Back to contacts') }}
 
-        {# Main Content #}
         <div class="max-w-4xl mx-auto px-4 py-8 -mt-8">
             <div class="bg-white rounded-2xl shadow-lg border border-green-100">
                 {{ form_start(form, {'attr': {'class': 'divide-y divide-green-100','enctype': 'multipart/form-data'}}) }}
 
-                {# Photo Upload Section #}
                 {% import 'components/photo_upload.html.twig' as photo_uploads %}
                 {{ photo_uploads.photo_upload(form.photo) }}
 
-                {# Basic Information #}
                 <div class="p-6 space-y-6">
                     {% import 'components/form_field.html.twig' as form_fields %}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -51,16 +46,13 @@
                         {{ form_fields.input(form.email, 'Email Address', 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z') }}
                     </div>
 
-                    {# Groups Section #}
                     {% import 'components/groups.html.twig' as group_selectors %}
                     {{ group_selectors.group_selector(form.groups) }}
                 </div>
 
-                {# Custom Fields Section #}
                 {% import 'components/custom_fields.html.twig' as custom_fields %}
                 {{ custom_fields.custom_fields_section() }}
 
-                {# Form Actions #}
                 {% import 'components/form_actions.html.twig' as form_actions %}
                 {{ form_actions.form_actions(path('app_contact_index'), 'Save Contact') }}
 

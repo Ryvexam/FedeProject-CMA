@@ -1,6 +1,5 @@
 {% macro group_selector(form_groups, selected_groups) %}
 <div class="space-y-3">
-    {# Header #}
     <div class="flex items-center">
         <svg class="h-5 w-5 text-green-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -9,7 +8,6 @@
         <span class="text-sm font-medium text-gray-700">Groups</span>
     </div>
 
-    {# Display selected groups as tags #}
     <div class="flex flex-wrap gap-2">
         {% for group in selected_groups %}
             <div class="bg-green-50 text-green-600 text-sm px-3 py-1 rounded-full border border-green-200">

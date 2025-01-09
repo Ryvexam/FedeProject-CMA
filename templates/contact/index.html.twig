@@ -34,7 +34,7 @@
 
 {% block javascripts %}
     {{ parent() }}
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> <!-- Include jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const selectAll = document.getElementById('select-all');
@@ -47,7 +47,6 @@
                 const checkedBoxes = document.querySelectorAll('.contact-checkbox:checked');
                 const checkedCount = checkedBoxes.length;
 
-                // Only enable and show delete button when 2 or more contacts are selected
                 deleteSelectedBtn.disabled = checkedCount < 2;
                 selectedCount.textContent = checkedCount;
                 selectedCount.parentElement.style.display = checkedCount > 0 ? 'block' : 'none';
@@ -74,8 +73,8 @@
             deleteSelectedBtn?.addEventListener('click', function(e) {
                 e.preventDefault();
                 const selectedIds = Array.from(document.querySelectorAll('.contact-checkbox:checked'))
-                    .map(checkbox => parseInt(checkbox.value)) // Convert to integers for sorting
-                    .sort((a, b) => a - b); // Sort in ascending order
+                    .map(checkbox => parseInt(checkbox.value))
+                    .sort((a, b) => a - b);
 
                 if (selectedIds.length >= 2 && confirm('Are you sure you want to delete the selected contacts?')) {
                     const input = document.createElement('input');
@@ -89,21 +88,19 @@
 
             updateDeleteButton();
 
-            // Dynamic Search Filtering
             $('#search').on('input', function() {
-                const searchTerm = $(this).val().toLowerCase(); // Get the search term
+                const searchTerm = $(this).val().toLowerCase();
 
                 $('.contact-row').each(function() {
-                    const contactName = $(this).find('td:nth-child(2)').text().toLowerCase(); // Get the contact name
-                    const contactPhone = $(this).find('td:nth-child(3)').text().toLowerCase(); // Get the contact phone
-                    const contactEmail = $(this).find('td:nth-child(4)').text().toLowerCase(); // Get the contact email
-                    const contactGroups = $(this).find('td:nth-child(5)').text().toLowerCase(); // Get the contact groups
+                    const contactName = $(this).find('td:nth-child(2)').text().toLowerCase();
+                    const contactPhone = $(this).find('td:nth-child(3)').text().toLowerCase();
+                    const contactEmail = $(this).find('td:nth-child(4)').text().toLowerCase();
+                    const contactGroups = $(this).find('td:nth-child(5)').text().toLowerCase();
 
-                    // Check if the search term matches any of the contact details
                     if (contactName.includes(searchTerm) || contactPhone.includes(searchTerm) || contactEmail.includes(searchTerm) || contactGroups.includes(searchTerm)) {
-                        $(this).show(); // Show the row if it matches
+                        $(this).show();
                     } else {
-                        $(this).hide(); // Hide the row if it doesn't match
+                        $(this).hide();
                     }
                 });
             });
@@ -142,7 +139,6 @@
                       font-medium text-sm transform transition hover:scale-105 hover:shadow-lg">
                         + Add contact
                     </a>
-                    <!-- Add the "Import from Google Contacts" button -->
                     <a href="{{ path('import_google') }}"
                        class="inline-flex items-center px-4 py-2 bg-blue-500 text-white rounded-lg
                       font-medium text-sm transform transition hover:bg-blue-600">
@@ -152,7 +148,6 @@
             </div>
         </header>
 
-        <!-- Search with animation -->
         <div class="max-w-7xl mx-auto px-4 py-6">
             <div class="flex gap-4 items-center fade-in-up">
                 <div class="relative flex-1">
@@ -168,7 +163,6 @@
             </div>
         </div>
 
-        <!-- Contact List -->
         <div class="max-w-7xl mx-auto px-4 pb-8">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 <table class="w-full">
@@ -197,7 +191,6 @@
                                     <input type="checkbox"
                                            class="contact-checkbox w-4 h-4 text-green-600 bg-gray-100 border-gray-300 rounded focus:ring-green-500 focus:ring-2"
                                            value="{{ contact.id }}">
-{#                                    <label for="contact-{{ contact.id }}" class="w-full py-3 ms-2 text-sm font-medium text-gray-900 ">{{ contact.firstName }} {{ contact.lastName }}</label>#}
                                 </div>
                             </td>
                             <td class="py-4 px-6">

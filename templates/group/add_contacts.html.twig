@@ -59,7 +59,6 @@
 
 {% block body %}
     <div class="min-h-screen bg-green-50">
-        <!-- Header with subtle gradient -->
         <header class="bg-gradient-to-r from-green-600 to-green-700 text-white">
             <div class="max-w-7xl mx-auto px-4 py-6 flex items-center justify-between">
                 <h1 class="text-2xl font-medium">Add Contacts to {{ group.name }}</h1>
@@ -73,16 +72,13 @@
             </div>
         </header>
 
-        <!-- Main Content -->
         <div class="max-w-7xl mx-auto px-4 py-8">
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
                 {{ form_start(form, {'attr': {'class': 'divide-y divide-green-100'}}) }}
 
-                <!-- Contacts Selection Section -->
                 <div class="p-6 space-y-4">
                     <h2 class="text-xl font-medium text-gray-900">Select Contacts to Add</h2>
 
-                    <!-- Select All Button -->
                     <div class="flex items-center ps-3 bg-green-50 p-3 rounded-lg border border-green-200">
                         <input type="checkbox"
                                id="select-all"
@@ -90,7 +86,6 @@
                         <label for="select-all" class="w-full py-2 ms-2 text-sm font-medium text-green-700">Select All</label>
                     </div>
 
-                    <!-- Contact List -->
                     <div class="mt-4 space-y-2">
                         {% for contact in form.contacts %}
                             <div class="flex items-center ps-3 contact-row fade-in-up hover:bg-green-50 rounded-lg transition-colors duration-200">
@@ -116,7 +111,6 @@
                     </div>
                 </div>
 
-                <!-- Form Actions -->
                 <div class="px-6 py-4 bg-gray-50 flex justify-end space-x-4">
                     <a href="{{ path('app_group_add_contacts', {'id': group.id}) }}"
                        class="inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
